@@ -1,6 +1,6 @@
 ## Survey Filter. Code adapted from Mission Impossible (Celebi et al., 2026)
 
-This repository is adapted from code written for the paper **“Mission Possible: The Collection of High-Quality Online Data”**
+This repository is adapted from a repository created for the paper **“Mission Possible: The Collection of High-Quality Online Data”**
 
 To begin: 
 1. [Read documentation on setting up the Qualtrics survey filter](/qualtrics%20survey%20file/README.md)
