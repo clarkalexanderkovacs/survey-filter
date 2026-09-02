@@ -1,0 +1,67 @@
+=================================================================
+DATA QUALITY REPORT
+=================================================================
+Generated : 02 Sep 2026  13:43:30
+Platform  : prolific
+Date range: 02 Sep 2026 – 02 Sep 2026
+Input     : data/all.RData
+
+-----------------------------------------------------------------
+1.  SAMPLE OVERVIEW
+-----------------------------------------------------------------
+
+  Total observations (raw)                            4
+
+  Exclusion criteria (may overlap across rows):
+    Incomplete survey  (Finished != True)            0  ( 0.0%)
+    Survey preview     (Status  != IP Addr)          1  (25.0%)
+    Duplicate platform ID (later entry)              0  ( 0.0%)
+
+    Total excluded  (exclusion == 1)                 1  (25.0%)
+    Analysis sample (exclusion == 0)                 3  (75.0%)
+
+-----------------------------------------------------------------
+2.  SURVEY ATTRITION  (N = 0 incomplete real responses)
+-----------------------------------------------------------------
+
+  Progress at drop-off:
+
+    Range                          N    % of incomplete
+    ------------------------------------------------
+    0%  (never left landing page)     0  ( 0.0%)
+    1  – 24%                          0  ( 0.0%)
+    25 – 49%                          0  ( 0.0%)
+    50 – 74%                          0  ( 0.0%)
+    75 – 99%                          0  ( 0.0%)
+    ------------------------------------------------
+    Total                             0
+
+-----------------------------------------------------------------
+3.  MAIN DATA QUALITY FLAGS  (N = 3)
+-----------------------------------------------------------------
+
+  Check                            Failed              Passed
+  ----------------------------------------------------------
+  Attention check                   1  (33.3%)         2  ( 66.7%)
+  Video check                       1  (33.3%)         2  ( 66.7%)
+  Typed text                        2  (66.7%)         1  ( 33.3%)
+  Typed with typical speed          2  (66.7%)         1  ( 33.3%)
+  Unique IP address                 3  (100.0%)         0  (  0.0%)
+  ----------------------------------------------------------
+
+  Keystrokes > 0                    0  ( 0.0%)         3  (100.0%)
+  No paste event                    2  (66.7%)         1  ( 33.3%)
+  No input jump >= 50 chars         0  ( 0.0%)         3  (100.0%)
+  Typing speed > 75 ms              1  (33.3%)         2  ( 66.7%)
+
+  Note: Typed text = keystrokes > 0 AND no paste AND no input jump.
+        Typed with typical speed additionally requires speed > 75 ms.
+
+-----------------------------------------------------------------
+4.  SUMMARY
+-----------------------------------------------------------------
+
+  All main checks passed (all_passed == 1)         0  ( 0.0%)
+  At least one check failed                        3  (100.0%)
+
+=================================================================

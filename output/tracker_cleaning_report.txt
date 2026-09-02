@@ -1,0 +1,35 @@
+
+=================================================================
+TRACKER CLEANING REPORT
+Script: clean_tracker_V2.R
+File:   data raw/V4_TESTDATA.csv
+Date:   2026-09-02 13:43:12
+Rows:   4
+=================================================================
+
+This report summarises how many tracker and key log JSON records were
+successfully parsed, salvaged (truncated but repaired), or could not be
+recovered. Use it to assess data completeness before running main.R / main.do.
+
+For the full list of survey questions and their Qualtrics export column
+names, see: output/qualtrics_variable_list.txt
+
+TRACKER JSON
+-----------------------------------------------------------------
+  Valid:            4
+  Salvaged:         0  (truncated; repaired before parsing)
+  Invalid:          0  (unparseable; tracker vars = NA for these rows)
+  Unknown QIDs:     0
+
+KEY LOG: key_log  (text variable: colors)
+-----------------------------------------------------------------
+  Valid:            4
+  Empty:            0  (no keystrokes recorded)
+  Salvaged:         0  (truncated; repaired before parsing)
+  Incomplete:       0  (truncated; could not be repaired; stats = NA)
+
+ISSUES
+-----------------------------------------------------------------
+  None.
+=================================================================
+
