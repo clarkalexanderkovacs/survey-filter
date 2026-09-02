@@ -12,6 +12,8 @@ See https://github.com/survey-data-quality-lab/mission-possible for more informa
 
 **Requirements:** R ≥ 4.0 · Stata ≥ 14 (if using the Stata scripts)
 
+>[!WARNING] Stata code outdated
+> All Stata code is currently out of date and contains significant bugs as of 9.2.2026. Stata code will be updated soon.
 ---
 
 ## Folder structure
