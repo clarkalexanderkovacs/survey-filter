@@ -69,7 +69,7 @@ input_raw <- "data raw/V4_TESTDATA.csv"
 #       2. Run code in [A1], [A2], and [A3].
 
 # [A1] [UPDATE] Path to the Qualtrics .qsf file
-qsf_path  <- "v3.qsf"
+qsf_path  <- "qualtrics survey file/v3.qsf"
 
 # [A2] Set output paths
 qid_table_path <- "output/qualtrics_variable_list.txt"    
