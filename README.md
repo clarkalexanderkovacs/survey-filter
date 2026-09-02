@@ -1,12 +1,10 @@
-## Mission Possible: The Collection of High-Quality Online Data
+## Survey Filter. Code adapted from Mission Impossible (Celebi et al., 2026)
 
-Welcome 👋  
+This repository is adapted from code written for the paper **“Mission Possible: The Collection of High-Quality Online Data”**
 
-This repository accompanies the paper **“Mission Possible: The Collection of High-Quality Online Data”** and provides materials to replicate or adapt our data collection.
+## Related links (Updated 9.2.26)
 
-## What's New? 
-
-To run your own screening survey with minimal effort, we now provide new cleaning code (R and STATA) and a new Qualtrics survey file:
+From Celebi et al.: To run your own screening survey with minimal effort, we now provide new cleaning code (R and STATA) and a new Qualtrics survey file:
 
 - **NEW Cleaning Code (01/04/2026)** 
 See the [mission-possible-code](https://github.com/survey-data-quality-lab/mission-possible-code/) Github respository.
