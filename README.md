@@ -1,4 +1,4 @@
-## Survey Filter. Code adapted from Mission Impossible (Celebi et al., 2026)
+## Survey Filter
 
 This repository is adapted from a repository created for the paper **“Mission Possible: The Collection of High-Quality Online Data”**
 
