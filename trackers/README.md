@@ -1,4 +1,4 @@
-# Trackers
+# /trackers
 
 This directory contains the JavaScript general tracker, keylog tracker, and fingerprinting script referenced in the paper's appendix, plus R code that turns their JSON outputs into analysis-ready variables.
 
