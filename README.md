@@ -2,9 +2,16 @@
 
 This repository is adapted from code written for the paper **“Mission Possible: The Collection of High-Quality Online Data”**
 
+To begin: 
+1. [Read documentation on setting up the Qualtrics survey filter](/qualtrics%20survey%20file/README.md)
+2. [Read documentation on using adapted code to extract and clean respondent data from Qualtrics export data](/code/README.md)
+
+The following text includes helpful links and a map of the repository provided by Celebi et al.
+
+
 ## Related links (Updated 9.2.26)
 
-From Celebi et al.: To run your own screening survey with minimal effort, we now provide new cleaning code (R and STATA) and a new Qualtrics survey file:
+To run your own screening survey with minimal effort, we now provide new cleaning code (R and STATA) and a new Qualtrics survey file:
 
 - **NEW Cleaning Code (01/04/2026)** 
 See the [mission-possible-code](https://github.com/survey-data-quality-lab/mission-possible-code/) Github respository.
