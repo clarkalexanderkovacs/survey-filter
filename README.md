@@ -8,7 +8,7 @@
   ### Fixed
   - Decreased the icon size for the video attention check.
 
-  ### Example output: 
+  ### Example output from main.R: 
   - Below is an example of tab switch analytics that will now be included in every run of main.R
   ```
 -----------------------------------------------------------------
@@ -30,6 +30,23 @@
   at least once on that page. Median s = median length of all switches there.
 
   ```
+
+### More specific data collected:
+
+| prolific_id | exclusion | question | n_tab_switches | tab_switch_lengths_s | total_tab_time_s |
+|---:|---:|---|---:|---|---:|
+| 1 | 0 | consent | 1 | 3.83 | 3.83 |
+| 1 | 0 | prolific_id | 0 | | 0 |
+| 1 | 0 | captcha | 0 | | 0 |
+| 1 | 0 | colors | 1 | 7.91 | 7.91 |
+| 1 | 0 | video | 1 | 3.6 | 3.6 |
+| 1 | 0 | Q23 | 0 | | 0 |
+| 2 | 0 | consent | 1 | 1.52 | 1.52 |
+| 2 | 0 | prolific_id | 0 | | 0 |
+| 2 | 0 | captcha | 0 | | 0 |
+| 2 | 0 | colors | 1 | 53 | 53 |
+| 2 | 0 | video | 0 | | 0 |
+| 2 | 0 | Q24 | 0 | | 0 |
 
   
 </details>
