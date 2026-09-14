@@ -64,7 +64,7 @@ Then run the script. It calls `qsf_extract.R` automatically and writes the follo
 
 | File | Folder | Contents |
 |---|---|---|
-| `tracker.xlsx` | `data/` | Cleaned tracker and keystroke data; merged into main dataset in Step 3 |
+| `tracker.xlsx` | `data/` | Cleaned tracker and keystroke data, including per-page tab-switch counts and lengths (`<page>_tabCount`, `<page>_tabTime`, `<page>_tabDurations`); merged into main dataset in Step 3 |
 | `tracker_cleaning_report.txt` | `output/` | How many tracker and key log rows were parsed, salvaged, or flagged |
 | `qualtrics_variable_list.txt` | `output/` | Human-readable table of all survey questions and their Qualtrics export column names; constructed by `qsf_extract.R`  |
 | `qid_map.R` | `code/` | Machine-readable table of all survey questions and their Qualtrics export column names; constructed by `qsf_extract.R` |
@@ -100,7 +100,8 @@ Either script imports the raw survey data, merges `tracker.xlsx`, applies exclus
 | `keep_ids.xlsx` | Participant IDs of those who pass all main checks (used for the two-stage procedure) |
 | `bonus_ids.xlsx` | Participant IDs and bonus payment amounts for selected dictators and recipients (zero-bonus rows dropped) |
 | `data_quality_report.txt` | Plain-text data quality report covering exclusion and data quality metrics |
-| `codebook.txt` / `codebook.xlsx` | Variable-level codebook for the main dataset |
+| `codebook.txt` / `codebook.xlsx` | Variable-level codebook for the main dataset | 
+| `tab_switches.xlsx` | One row per respondent × question: number of tab switches and the length of each in seconds (R only) |
 
 
 ---
@@ -110,3 +111,4 @@ Either script imports the raw survey data, merges `tracker.xlsx`, applies exclus
 - The R and Stata scripts both read from the same raw Excel file and produce matching outputs.
 - `tracker.xlsx` must exist before running `main.do` or `main.R`. Always run `clean_tracker.R` first.
 - Typing-based checks (speed, paste, input jump) operate on the `key_log` column, which corresponds to the main open-text response. Multiple key log trackers can be processed simultaneously by adding entries to the `keylogs` list in `clean_tracker.R` section 0. But only `key_log` is used for constructing our main data quality checks in `main.do` and `main.R`.
+- Tab switches are recorded per survey page by the tracker script in the survey header, so put each question you want to measure on its own page. A switch is counted whenever the survey page becomes hidden: the respondent switches to another browser tab, minimises the browser, locks the screen, or switches to another app on a phone. In Chrome, another window fully covering the browser may also count. Switching to another application while the survey stays visible on screen is not recorded. Responses collected with the older tracker script have no tab data, so their tab columns are NA. <!-- [TAB-SWITCHES] -->
