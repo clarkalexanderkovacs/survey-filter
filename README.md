@@ -6,7 +6,32 @@
   - In these files, a switch was created to enable later reversion to a text-entry based attention check. 
 
   ### Fixed
-  - Decreased the icon size for the video attention check. 
+  - Decreased the icon size for the video attention check.
+
+  ### Example output: 
+  - Below is an example of tab switch analytics that will now be included in every run of main.R
+  ```
+-----------------------------------------------------------------
+5.  TAB SWITCHES  (N = 2)
+-----------------------------------------------------------------
+
+  Question             N   Switched >= 1  Switches  Median s
+  ----------------------------------------------------------
+  consent              2      2 (100.0%)         2       2.7
+  prolific_id          2      0 (  0.0%)         0         -
+  captcha              2      0 (  0.0%)         0         -
+  colors               2      2 (100.0%)         2      30.5
+  video                2      1 ( 50.0%)         1       3.6
+  Q23                  1      0 (  0.0%)         0         -
+  Q24                  1      0 (  0.0%)         0         -
+  ----------------------------------------------------------
+
+  N = respondents who reached the page. Switched >= 1 = left the survey tab
+  at least once on that page. Median s = median length of all switches there.
+
+  ```
+
+  
 </details>
 
 ## Survey Filter
