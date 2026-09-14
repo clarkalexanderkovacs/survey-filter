@@ -1,3 +1,14 @@
+<details>
+  <summary><b>What's New (9.14.26) (Click to expand)</b></summary>
+
+  ### Color attention check
+  - The color attention check was reverted to a multiple choice tick-box format. clean_tracker.R, main.R, and data_quality_report.R were updated to reflect this change.
+  - In these files, a switch was created to enable later reversion to a text-entry based attention check. 
+
+  ### Fixed
+  - Decreased the icon size for the video attention check. 
+</details>
+
 ## Survey Filter
 
 This repository is adapted from a repository created for the paper **“Mission Possible: The Collection of High-Quality Online Data”**
@@ -9,14 +20,14 @@ To begin:
 The following text includes helpful links and a map of the repository provided by Celebi et al.
 
 
-## Related links (Updated 9.2.26)
+## Related links
 
 To run your own screening survey with minimal effort, we now provide new cleaning code (R and STATA) and a new Qualtrics survey file:
 
-- **NEW Cleaning Code (01/04/2026)** 
+- **Cleaning Code (01/04/2026)** 
 See the [mission-possible-code](https://github.com/survey-data-quality-lab/mission-possible-code/) Github respository.
 
-- **NEW Qualtrics Survey File (01/04/2026)** 
+- **Qualtrics Survey File (01/04/2026)** 
 See [Mission_Possible_Survey_V1.qsf](qualtrics%20survey%20file/)
 
 ## What’s Inside?
