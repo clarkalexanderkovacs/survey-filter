@@ -16,6 +16,10 @@ if (!exists("report_out")) {
   report_out <- "output/data_quality_reportR.txt"
 }
 
+# [TYPING-CHECKS] inherited from main.R when sourced; default off standalone.
+if (!exists("typing_checks")) typing_checks <- FALSE
+
+
 input_all <- "data/all.RData"
 if (!exists("df")) {
   load(input_all)   # loads df
@@ -53,7 +57,7 @@ n_excl <- n_where(df$exclusion == 1)
 
 n_incomplete <- n_where(df$Finished != "True")
 n_preview    <- n_where(df$Status   != "IP Address")
-n_dup_id     <- n_where(df$flag_id  == 1 & df$Finished == "True")
+# [NO-PII] No duplicate-platform-ID count: the Prolific ID is not collected.
 
 platform <- df$study[1]
 date_min <- format(min(df$t, na.rm = TRUE), "%d %b %Y")
@@ -81,7 +85,7 @@ n_att    <- n_where(df_a$flag_attention == 1)
 n_vid    <- n_where(df_a$flag_video     == 1)
 n_typed  <- n_where(df_a$flag_typed     == 1)
 n_ts     <- n_where(df_a$ok_typedspeed  == 0)
-n_ip     <- n_where(df_a$flag_ip        == 1)
+# [NO-PII] No duplicate-IP count: the IP address is not collected.
 n_nokeys <- n_where(df_a$flag_nokeys    == 1)
 n_paste  <- n_where(df_a$flag_paste     == 1)
 n_jump   <- n_where(df_a$flag_inputjump == 1)
@@ -90,6 +94,28 @@ n_speed  <- n_where(df_a$flag_speed     == 1)
 n_pass <- n_where(df_a$all_passed == 1)
 n_fail <- N_a - n_pass
 
+# --- Tab switches (analysis sample only) --- [TAB-SWITCHES]
+
+tab_pages <- sub("_tabCount$", "", grep("_tabCount$", names(df_a), value = TRUE))
+
+tab_header <- sprintf("  %-16s %5s  %14s  %8s  %8s",
+                      "Question", "N", "Switched >= 1", "Switches", "Median s")
+
+tab_rows <- vapply(tab_pages, function(p) {
+  n_sw   <- df_a[[paste0(p, "_tabCount")]]
+  durs   <- as.character(df_a[[paste0(p, "_tabDurations")]])
+  secs   <- as.numeric(unlist(strsplit(durs[!is.na(durs)], "|", fixed = TRUE)))
+  n_seen <- sum(!is.na(n_sw))
+  n_any  <- n_where(n_sw > 0)
+  sprintf("  %-16s %5d  %5d (%5.1f%%)  %8d  %8s",
+          p, n_seen, n_any, if (n_seen > 0) pct(n_any, n_seen) else 0,
+          as.integer(sum(n_sw, na.rm = TRUE)),
+          if (length(secs) > 0) sprintf("%.1f", median(secs)) else "-")
+}, character(1), USE.NAMES = FALSE)
+
+if (length(tab_rows) == 0) {
+  tab_rows <- "  No tab-switch columns found (data collected with the old tracker?)."
+}
 
 # =============================================================================
 # 2. Build report lines
@@ -98,6 +124,24 @@ n_fail <- N_a - n_pass
 S1 <- strrep("=", 65)
 S2 <- strrep("-", 65)
 S3 <- paste0("  ", strrep("-", 58))
+
+# [TYPING-CHECKS]
+
+if (typing_checks) {
+  typing_main  <- c(fmt_row("Typed text",               n_typed, N_a),
+                    fmt_row("Typed with typical speed", n_ts,    N_a))
+  typing_detail <- c(fmt_row("Keystrokes > 0",            n_nokeys, N_a),
+                     fmt_row("No paste event",            n_paste,  N_a),
+                     fmt_row("No input jump >= 50 chars", n_jump,   N_a),
+                     fmt_row("Typing speed > 75 ms",      n_speed,  N_a),
+                     "",
+                     "  Note: Typed text = keystrokes > 0 AND no paste AND no input jump.",
+                     "        Typed with typical speed additionally requires speed > 75 ms.")
+} else {
+  typing_main   <- "  Typed text / typing speed        [DISABLED — no open-text question]"
+  typing_detail <- c("  Typing sub-checks are disabled because the colours question",
+                     "  is a checkbox question with no free-text answer.")
+}
 
 lines <- c(
 
@@ -120,7 +164,6 @@ lines <- c(
   "  Exclusion criteria (may overlap across rows):",
   fmt_excl("Incomplete survey  (Finished != True)",   n_incomplete, N),
   fmt_excl("Survey preview     (Status  != IP Addr)", n_preview,    N),
-  fmt_excl("Duplicate platform ID (later entry)",     n_dup_id,     N),
   "",
   fmt_excl("Total excluded  (exclusion == 1)",        n_excl, N),
   fmt_excl("Analysis sample (exclusion == 0)",        n_incl, N),
@@ -153,18 +196,10 @@ lines <- c(
   S3,
   fmt_row("Attention check",           n_att,    N_a),
   fmt_row("Video check",               n_vid,    N_a),
-  fmt_row("Typed text",                n_typed,  N_a),
-  fmt_row("Typed with typical speed",  n_ts,     N_a),
-  fmt_row("Unique IP address",         n_ip,     N_a),
+  typing_main,
   S3,
   "",
-  fmt_row("Keystrokes > 0",            n_nokeys, N_a),
-  fmt_row("No paste event",            n_paste,  N_a),
-  fmt_row("No input jump >= 50 chars", n_jump,   N_a),
-  fmt_row("Typing speed > 75 ms",      n_speed,  N_a),
-  "",
-  "  Note: Typed text = keystrokes > 0 AND no paste AND no input jump.",
-  "        Typed with typical speed additionally requires speed > 75 ms.",
+  typing_detail,
   "",
 
   # --- 4. Summary ---
@@ -174,6 +209,20 @@ lines <- c(
   "",
   sprintf("  %-44s %5d  (%4.1f%%)", "All main checks passed (all_passed == 1)", n_pass, pct(n_pass, N_a)),
   sprintf("  %-44s %5d  (%4.1f%%)", "At least one check failed",                n_fail, pct(n_fail, N_a)),
+  "",
+
+  # --- 5. Tab Switches --- [TAB-SWITCHES]
+  S2,
+  sprintf("5.  TAB SWITCHES  (N = %d)", N_a),
+  S2,
+  "",
+  tab_header,
+  S3,
+  tab_rows,
+  S3,
+  "",
+  "  N = respondents who reached the page. Switched >= 1 = left the survey tab",
+  "  at least once on that page. Median s = median length of all switches there.",
   "",
   S1
 

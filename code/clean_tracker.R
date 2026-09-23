@@ -5,7 +5,7 @@
 #
 # Purpose: Parse and clean tracker JSON and key log data from the raw Qualtrics
 #          export. Produces page-level behavioural indicators (time on page,
-#          mouse activity, paste events) and keystroke-level statistics (typing
+#          mouse activity, paste events, tab switches count/duration) and keystroke-level statistics (typing
 #          speed, input jumps, text reconstruction).
 #
 # Run BEFORE main.R / main.do
@@ -51,10 +51,12 @@ library(stringdist)
 # --------------------------------------------------------------------------- #
 
 # [1] [UPDATE] Working directory
-setwd("C:/Users/ck947/Desktop/Maria/Survey filter/mission-possible-code-main")
+# [NO-PII] Points at the non-identifiable fork, not mission-possible-code-main.
+setwd("C:/Users/ck947/Desktop/Maria/Survey filter/Survey_Filter - Non-Identifiable")
 
 # [2] [UPDATE] Raw Qualtrics export (.csv or .xlsx)
-input_raw <- "data raw/V4_TESTDATA.csv"
+# [NO-PII] Export from the survey built from v5_noPII.qsf.
+input_raw <- "data raw/V5_NOPII_TESTDATA.csv"
 
 # [3] [UPDATE] Match tracker data to Qualtrics question labels
 #
@@ -69,7 +71,7 @@ input_raw <- "data raw/V4_TESTDATA.csv"
 #       2. Run code in [A1], [A2], and [A3].
 
 # [A1] [UPDATE] Path to the Qualtrics .qsf file
-qsf_path  <- "qualtrics survey file/v3.qsf"
+qsf_path  <- "qualtrics survey file/v5_noPII.qsf"   # [NO-PII]
 
 # [A2] Set output paths
 qid_table_path <- "output/qualtrics_variable_list.txt"    
@@ -102,7 +104,10 @@ source(qid_map_path)            # then loads it into memory
 #     text_var: column name of the corresponding open-text answer
 #     You can identify text_var in output/qualtrics_variable_list.txt or qid_map.R 
 keylogs <- list(
-  list(col = "key_log", text_var = "colors")
+  # [TYPING-CHECKS] disabled 2026-09-14 — `colors` is now a checkbox question,
+  # so there is no open-text answer and no keystrokes to log. Restore this line
+  # (pointing text_var at a real open-text variable) to re-enable.
+  # list(col = "key_log", text_var = "colors")
 )
 
 # [5] Output file written by this script
@@ -130,9 +135,11 @@ if (grepl("\\.csv$", input_raw, ignore.case = TRUE)) {
 # Drop the remaining Qualtrics header row(s)
 raw <- raw[-seq_len(n_drop), ]
 
-# Derive column lists from the keylogs config
-keylog_cols   <- sapply(keylogs, `[[`, "col")
-text_var_cols <- unique(sapply(keylogs, `[[`, "text_var"))
+# Derive column lists from the keylogs config.
+# unlist()/as.character() so an empty keylogs list yields character(0) rather
+# than list(), which all_of() below rejects.  # [TYPING-CHECKS]
+keylog_cols   <- as.character(unlist(lapply(keylogs, `[[`, "col")))
+text_var_cols <- unique(as.character(unlist(lapply(keylogs, `[[`, "text_var"))))
 
 # Verify all columns referenced in settings exist in the imported data
 required_cols <- c("ResponseId", "tracking_json", keylog_cols, text_var_cols)
@@ -221,19 +228,34 @@ salvage <- function(json_string) {
 
 }
 
-# Extracts the eight per-page metrics from one row of a parsed tracker JSON.
+# Extracts the per-page metrics from one row of a parsed tracker JSON.
 # Returns a named list whose names become the column-name suffixes when combined
-# with the page label in section 2b (e.g. "dictator_duration", "dictator_paste").
+# with the page label in section 2b (e.g. "colors_duration", "colors_tabCount").
 # The "page" field stores the Qualtrics page index and gets the "_page" suffix,
 # which is used by aggregate_list_cols() to apply the correct aggregation rule.
 parse_tracker_entry <- function(json_row) {
+
+  # [TAB-SWITCHES] tab_switches holds one {start, ms} object per time the survey
+  # tab was hidden. The field is missing in data collected with the old tracker
+  # script; the tab columns are then NA rather than a misleading 0.
+  if (is.null(json_row$tab_switches)) {
+    tab_secs <- NA_real_
+    tab_n    <- NA_integer_
+  } else {
+    sw       <- json_row$tab_switches[[1]]
+    tab_secs <- if (is.data.frame(sw) && nrow(sw) > 0) round(sw$ms / 1000, 2) else numeric(0)
+    tab_n    <- length(tab_secs)
+  }
+
   list(
     page           = json_row$page,
     duration       = json_row$time_on_page,
     paste          = json_row$paste_detected,
     copy           = json_row$copy_detected,
     tab            = json_row$tab_hidden,
-    blur           = json_row$window_blurred,
+    tabCount       = tab_n,
+    tabTime        = sum(tab_secs),
+    tabDurations   = tab_secs,
     mouseMoveCount = json_row$mouse_move_count,
     clickCount     = json_row$click_count
   )
@@ -254,8 +276,9 @@ aggregate_list_cols <- function(df) {
       vals <- unlist(cell, recursive = TRUE, use.names = FALSE)
       if (all(is.na(vals))) return(NA)
 
-      # Page-index columns: concatenate visit indices as "1|2|..." strings
-      if (grepl("_page$", colname)) return(paste(vals, collapse = "|"))
+      # Page-index and tab-duration columns: concatenate as "1|2|..." strings
+      # [TAB-SWITCHES] without _tabDurations here, switch lengths would be summed
+      if (grepl("_page$|_tabDurations$", colname)) return(paste(vals, collapse = "|"))
 
       # Numeric: sum across visits; logical: TRUE if event occurred in any visit
       if (is.numeric(vals))  return(sum(vals, na.rm = TRUE))

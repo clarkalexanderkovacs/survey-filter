@@ -1,4 +1,9 @@
 * =============================================================================
+* [NO-PII] NOT MAINTAINED IN THE NON-IDENTIFIABLE FORK.
+*          This script still reports flag_id (Prolific ID) and flag_ip
+*          (IP address), which this fork no longer collects, and is out of
+*          date with v5. Use code/data_quality_report.R (run via main.R).
+* =============================================================================
 * Script:  data_quality_report.do
 * Author:  Sören Harrs
 * Date:    2026-03-20

@@ -18,8 +18,10 @@ library(stringr)
 # Uncomment the following lines if running this script standalone. 
 # Ignore if sourcing from clean_tracker.R
 
-# Path to your .qsf file 
-qsf_path <- "v3.qsf"
+# Path to your .qsf file
+# Only used when running standalone; sourcing from clean_tracker.R sets this
+# already, so do not overwrite the caller's value.
+if (!exists("qsf_path")) qsf_path <- "qualtrics survey file/v3.qsf"
 
 # Output path for the generated qid_map
 #qid_map_path <- "code/qid_map.R"
@@ -35,6 +37,14 @@ exclude_types <- c("Timing", "Meta")
 # =============================================================================
 # Parse QSF and extract question metadata
 # =============================================================================
+
+# fromJSON() falls back to parsing its argument AS JSON when the file does not
+# exist, which turns a missing file into a confusing "lexical error" about the
+# path text. Check explicitly so the real problem is reported.
+if (!file.exists(qsf_path)) {
+  stop(sprintf("QSF file not found: %s\n  Working directory: %s\n  Set qsf_path in clean_tracker.R [A1] to a path relative to that directory.",
+               qsf_path, getwd()))
+}
 
 qsf      <- fromJSON(qsf_path, simplifyVector = FALSE)
 elements <- qsf$SurveyElements

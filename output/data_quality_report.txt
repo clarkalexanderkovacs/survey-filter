@@ -1,24 +1,23 @@
 =================================================================
 DATA QUALITY REPORT
 =================================================================
-Generated : 02 Sep 2026  13:43:30
+Generated : 23 Sep 2026  11:12:28
 Platform  : prolific
-Date range: 02 Sep 2026 – 02 Sep 2026
+Date range: 23 Sep 2026 – 23 Sep 2026
 Input     : data/all.RData
 
 -----------------------------------------------------------------
 1.  SAMPLE OVERVIEW
 -----------------------------------------------------------------
 
-  Total observations (raw)                            4
+  Total observations (raw)                            2
 
   Exclusion criteria (may overlap across rows):
     Incomplete survey  (Finished != True)            0  ( 0.0%)
-    Survey preview     (Status  != IP Addr)          1  (25.0%)
-    Duplicate platform ID (later entry)              0  ( 0.0%)
+    Survey preview     (Status  != IP Addr)          0  ( 0.0%)
 
-    Total excluded  (exclusion == 1)                 1  (25.0%)
-    Analysis sample (exclusion == 0)                 3  (75.0%)
+    Total excluded  (exclusion == 1)                 0  ( 0.0%)
+    Analysis sample (exclusion == 0)                 2  (100.0%)
 
 -----------------------------------------------------------------
 2.  SURVEY ATTRITION  (N = 0 incomplete real responses)
@@ -37,31 +36,41 @@ Input     : data/all.RData
     Total                             0
 
 -----------------------------------------------------------------
-3.  MAIN DATA QUALITY FLAGS  (N = 3)
+3.  MAIN DATA QUALITY FLAGS  (N = 2)
 -----------------------------------------------------------------
 
   Check                            Failed              Passed
   ----------------------------------------------------------
-  Attention check                   1  (33.3%)         2  ( 66.7%)
-  Video check                       1  (33.3%)         2  ( 66.7%)
-  Typed text                        2  (66.7%)         1  ( 33.3%)
-  Typed with typical speed          2  (66.7%)         1  ( 33.3%)
-  Unique IP address                 3  (100.0%)         0  (  0.0%)
+  Attention check                   1  (50.0%)         1  ( 50.0%)
+  Video check                       1  (50.0%)         1  ( 50.0%)
+  Typed text / typing speed        [DISABLED — no open-text question]
   ----------------------------------------------------------
 
-  Keystrokes > 0                    0  ( 0.0%)         3  (100.0%)
-  No paste event                    2  (66.7%)         1  ( 33.3%)
-  No input jump >= 50 chars         0  ( 0.0%)         3  (100.0%)
-  Typing speed > 75 ms              1  (33.3%)         2  ( 66.7%)
-
-  Note: Typed text = keystrokes > 0 AND no paste AND no input jump.
-        Typed with typical speed additionally requires speed > 75 ms.
+  Typing sub-checks are disabled because the colours question
+  is a checkbox question with no free-text answer.
 
 -----------------------------------------------------------------
 4.  SUMMARY
 -----------------------------------------------------------------
 
-  All main checks passed (all_passed == 1)         0  ( 0.0%)
-  At least one check failed                        3  (100.0%)
+  All main checks passed (all_passed == 1)         1  (50.0%)
+  At least one check failed                        1  (50.0%)
+
+-----------------------------------------------------------------
+5.  TAB SWITCHES  (N = 2)
+-----------------------------------------------------------------
+
+  Question             N   Switched >= 1  Switches  Median s
+  ----------------------------------------------------------
+  consent              2      0 (  0.0%)         0         -
+  captcha              2      0 (  0.0%)         0         -
+  colors               2      1 ( 50.0%)         1     105.8
+  video                2      0 (  0.0%)         0         -
+  Q23                  1      0 (  0.0%)         0         -
+  Q24                  1      0 (  0.0%)         0         -
+  ----------------------------------------------------------
+
+  N = respondents who reached the page. Switched >= 1 = left the survey tab
+  at least once on that page. Median s = median length of all switches there.
 
 =================================================================

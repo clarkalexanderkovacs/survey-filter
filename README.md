@@ -1,112 +1,123 @@
-<details>
-  <summary><b>What's New (9.21.26) (Click to expand)</b></summary>
+## Mission Possible: Clean Data Quality Trackers
 
-  ### No Personally-Identifying Information version
-  - I created a version of the survey that collects no personally-identifiable information. The following information is no longer collected: Prolific ID, study_ID, session_ID, IP address, all device fingerprinting metadata (e.g., browser metadata, operating system, etc)
+This repository constructs data quality metrics from raw Qualtrics survey exports. 
 
-</details>
+The tracking data is cleaned, merged with the survey responses, and used to define five main data quality flags. The scripts export analysis-ready datasets, participant ID lists for the two-stage procedure, and a plain-text data quality report.
 
-<details>
-  <summary><b>What's New (9.14.26) (Click to expand)</b></summary>
+The default values are set to work with our [Mission_Possible_Survey_V1.qsf](https://github.com/survey-data-quality-lab/mission-possible/tree/03819bb4e7fdb9259a7d82d04e53e38ecc55b209/qualtrics%20survey%20file) survey. For testing, an example .xlsx file and .qsf file are provided.
 
-  ### Color attention check
-  - The color attention check was reverted to a multiple choice tick-box format. clean_tracker.R, main.R, and data_quality_report.R were updated to reflect this change.
-  - In these files, a switch was created to enable later reversion to a text-entry based attention check. 
+You can adapt it to your own Qualtrics survey by following the instructions below. 
 
-  ### Fixed
-  - Decreased the icon size for the video attention check.
+See https://github.com/survey-data-quality-lab/mission-possible for more information. 
 
-  ### Example output from main.R: 
-  - Below is an example of tab switch analytics that will now be included in every run of main.R
-  ```
------------------------------------------------------------------
-5.  TAB SWITCHES  (N = 2)
------------------------------------------------------------------
+**Requirements:** R ≥ 4.0 · Python 3 (only to regenerate the survey file)
 
-  Question             N   Switched >= 1  Switches  Median s
-  ----------------------------------------------------------
-  consent              2      2 (100.0%)         2       2.7
-  prolific_id          2      0 (  0.0%)         0         -
-  captcha              2      0 (  0.0%)         0         -
-  colors               2      2 (100.0%)         2      30.5
-  video                2      1 ( 50.0%)         1       3.6
-  Q23                  1      0 (  0.0%)         0         -
-  Q24                  1      0 (  0.0%)         0         -
-  ----------------------------------------------------------
+---
 
-  N = respondents who reached the page. Switched >= 1 = left the survey tab
-  at least once on that page. Median s = median length of all switches there.
+## Non-identifiable branch <!-- [NO-PII] -->
 
-  ```
+This branch of `mission-possible-code-main` collects **no personally identifiable information**. The survey to deploy is `qualtrics survey file/v5_noPII.qsf`, generated from `v5.qsf` by `code/make_nopii_qsf.py`. Follow `TODO_noPII.md` to import it and verify the settings.
 
-### More specific data collected:
+**Not collected:** IP address, location (latitude/longitude), Prolific ID (`prolific_id`, `PROLIFIC_PID`, `STUDY_ID`, `SESSION_ID`), device fingerprint (FingerprintJS `visitorId`/`requestId`, browser/OS/resolution metadata), keystroke log. *Anonymize responses* is switched on in Qualtrics.
 
-| prolific_id | exclusion | question | n_tab_switches | tab_switch_lengths_s | total_tab_time_s |
-|---:|---:|---|---:|---|---:|
-| 1 | 0 | consent | 1 | 3.83 | 3.83 |
-| 1 | 0 | prolific_id | 0 | | 0 |
-| 1 | 0 | captcha | 0 | | 0 |
-| 1 | 0 | colors | 1 | 7.91 | 7.91 |
-| 1 | 0 | video | 1 | 3.6 | 3.6 |
-| 1 | 0 | Q23 | 0 | | 0 |
-| 2 | 0 | consent | 1 | 1.52 | 1.52 |
-| 2 | 0 | prolific_id | 0 | | 0 |
-| 2 | 0 | captcha | 0 | | 0 |
-| 2 | 0 | colors | 1 | 53 | 53 |
-| 2 | 0 | video | 0 | | 0 |
-| 2 | 0 | Q24 | 0 | | 0 |
+**Consequences:**
 
-  
-</details>
+- Rows are keyed by the Qualtrics `ResponseId`. `keep_ids.xlsx`, `checks.xlsx` and `tab_switches.xlsx` list ResponseIds, not Prolific IDs, so passing respondents cannot be re-invited for a stage 2.
+- The **duplicate Prolific ID** exclusion and the **unique IP address** check are removed. Prolific itself stops a participant from taking a study twice.
+- The remaining checks are the attention check and the video check. The typing checks remain switched off, and re-enabling them would need a keystroke logger in the survey.
+- `main.R` drops any identifying column it still finds in a raw export (setting [5]) and warns if any of them held data.
+- Only the R pipeline is maintained. `main.do` and `data_quality_report.do` are out of date and still expect the IP address and Prolific ID.
 
-## Survey Filter
+---
 
-This repository is adapted from a repository created for the paper **“Mission Possible: The Collection of High-Quality Online Data”**
+## Folder structure
 
-To begin: 
-1. [Read documentation on setting up the Qualtrics survey filter](/qualtrics%20survey%20file/README.md)
-2. [Read documentation on using adapted code to extract and clean respondent data from Qualtrics export data](/code/README.md)
+```
+data raw/                          ← Qualtrics Excel export (.xlsx)
+qualtrics survey file/             ← Qualtrics survey file (.qsf)
+code/                              ← scripts listed below
+data/                              ← cleaned datasets (written by scripts)
+output/                            ← reports, codebook, ID lists (written by scripts)
+```
 
-The following text includes helpful links and a map of the repository provided by Celebi et al.
+---
+
+## Scripts
+
+| File | Role |
+|---|---|
+| `clean_tracker.R` | Parses tracker JSON and key log JSON; writes `tracker.xlsx` |
+| `qsf_extract.R` | Extracts survey questions (QID) and export labels from the `.qsf` file; runs as part of `clean_tracker.R` |
+| `main.R` | Main cleaning script; merges tracker output, defines data quality checks, and writes all outputs including the data quality report |
+| `data_quality_report.R` | Standalone script to regenerate the data quality report from `all.RData` |
+| `make_nopii_qsf.py` | Builds `v5_noPII.qsf` from `v5.qsf` by removing everything that collects identifying data |
+| `main.do` / `data_quality_report.do` | Stata versions. **Not maintained in this fork.** |
+
+---
+
+## Workflow
+
+### Step 0 — Download or clone the repository
+
+Download or clone this repository to your computer, then open the project folder locally.
+
+### Step 1 — Download files from Qualtrics
+
+1. Export survey responses as an **Excel (.xlsx)** file (use **Export Labels**), and place it in `data raw/`.
+2. Export the **Qualtrics survey (.qsf)** file (Survey → Tools → Import / Export → Export survey) and place it in `qualtrics survey file/`.
+
+Note: make sure to export these two files at about the same time so there are no inconsistencies. 
+
+### Step 2 — Run the R clean tracker script
+
+Open `clean_tracker.R` and update the required settings at the top (section 0):
+
+- `setwd(...)` — path to the project root         **[UPDATE]**
+- `input_raw` — path to the raw Excel export      **[UPDATE]**
+- `qsf_path` — path to the `.qsf` file            **[UPDATE]**
+
+Then run the script. It calls `qsf_extract.R` automatically and writes the following outputs:
+
+| File | Folder | Contents |
+|---|---|---|
+| `tracker.xlsx` | `data/` | Cleaned tracker and keystroke data, including per-page tab-switch counts and lengths (`<page>_tabCount`, `<page>_tabTime`, `<page>_tabDurations`); merged into main dataset in Step 3 |
+| `tracker_cleaning_report.txt` | `output/` | How many tracker and key log rows were parsed, salvaged, or flagged |
+| `qualtrics_variable_list.txt` | `output/` | Human-readable table of all survey questions and their Qualtrics export column names; constructed by `qsf_extract.R`  |
+| `qid_map.R` | `code/` | Machine-readable table of all survey questions and their Qualtrics export column names; constructed by `qsf_extract.R` |
+
+### Step 3 — Run the main cleaning script
+
+Open `main.R` and verify the settings at the top (section 0):
+
+- If run in the same session as `clean_tracker.R`, the working directory and `input_raw` path are inherited automatically.
+- Settings [3] to [5]                                 **[VERIFY]**
+
+(The Stata script `main.do` is not maintained in this fork.)
+
+The script imports the raw survey data, drops any identifying columns, merges `tracker.xlsx`, applies exclusion criteria and data quality flags, and writes the following outputs:
+
+**Written to `data/`:**
+
+| File | Contents |
+|---|---|
+| `main.RData` | Cleaned dataset restricted to participants who pass all exclusion criteria |
+| `all.RData` | Full dataset including excluded participants, with exclusion and quality flags retained |
+
+**Written to `output/`:**
+
+| File | Contents |
+|---|---|
+| `keep_ids.xlsx` | ResponseIds of those who pass all main checks |
+| `checks.xlsx` | One row per respondent: ResponseId and pass/fail for each main check |
+| `data_quality_report.txt` | Plain-text data quality report covering exclusion and data quality metrics |
+| `codebook.xlsx` | Variable-level codebook for the main dataset |
+| `tab_switches.xlsx` | One row per respondent × question: number of tab switches and the length of each in seconds |
 
 
-## Related links
+---
 
-To run your own screening survey with minimal effort, we now provide new cleaning code (R and STATA) and a new Qualtrics survey file:
+## Notes
 
-- **Cleaning Code (01/04/2026)** 
-See the [mission-possible-code](https://github.com/survey-data-quality-lab/mission-possible-code/) Github respository.
-
-- **Qualtrics Survey File (01/04/2026)** 
-See [Mission_Possible_Survey_V1.qsf](qualtrics%20survey%20file/)
-
-## What’s Inside?
-
-- **Paper**  
-  The working paper (PDF). See [`paper/`](paper/).  
-  > If GitHub can’t preview the PDF, click **Download** to view it locally.
-
-- **Tracking scripts for Qualtrics**  
-  JavaScript code used in the survey to track behavior, keystrokes, and digital fingerprint. See [`trackers/`](trackers/) .
-
-- **Qualtrics Survey Files**  
-  Qualtrics survey with the tracking scripts. See [`qualtrics survey file/`](qualtrics%20survey%20file/).
-
-- **Video attention check**  
-  Code to generate your own version of the video-based attention check, plus example outputs. See [`attention-video/`](attention-video/).
-  
-- **Prompts**  
-  The **simple** and **complex** agent prompts used in the paper. See [`prompts/`](prompts/).
-
-## What's Coming? 
-
-To track and compare data quality across online survey platforms over time, we are currently working on a 
-
-- **Data Quality Hub for Online Surveys** - Researchers can submit their study results — the dashboard updates as new studies are added.
-
-## Using this repository
-
-1. Browse to the folder you need (e.g. `attention-video/`).
-2. Open that folder’s own `README.md` for installation and usage.
-3. Adapt the parameters to your own survey platform (Qualtrics, oTree, nodeGame).
-
+- `tracker.xlsx` must exist before running `main.R`. Always run `clean_tracker.R` first.
+- Typing-based checks (speed, paste, input jump) operate on the `key_log` column, which corresponds to the main open-text response. Multiple key log trackers can be processed simultaneously by adding entries to the `keylogs` list in `clean_tracker.R` section 0. But only `key_log` is used for constructing our main data quality checks in `main.do` and `main.R`.
+- Tab switches are recorded per survey page by the tracker script in the survey header, so put each question you want to measure on its own page. A switch is counted whenever the survey page becomes hidden: the respondent switches to another browser tab, minimises the browser, locks the screen, or switches to another app on a phone. In Chrome, another window fully covering the browser may also count. Switching to another application while the survey stays visible on screen is not recorded. Responses collected with the older tracker script have no tab data, so their tab columns are NA. <!-- [TAB-SWITCHES] -->

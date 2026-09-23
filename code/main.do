@@ -1,4 +1,10 @@
 * =============================================================================
+* [NO-PII] NOT MAINTAINED IN THE NON-IDENTIFIABLE FORK.
+*          This script still expects the IP address (ip_address) and Prolific
+*          ID (prolific_id), which this fork no longer collects, and is out of
+*          date with v5 (attention1_3, video == "3169", dictator game).
+*          Use code/main.R.
+* =============================================================================
 * Script:  main.do
 * Author:  Sören Harrs
 * Date:    2026-04-01
