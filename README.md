@@ -1,4 +1,12 @@
 <details>
+  <summary><b>What's New (9.21.26) (Click to expand)</b></summary>
+
+  ### No Personally-Identifying Information version
+  - I created a version of the survey that collects no personally-identifiable information. The following information is no longer collected: Prolific ID, study_ID, session_ID, IP address, all device fingerprinting metadata (e.g., browser metadata, operating system, etc)
+
+</details>
+
+<details>
   <summary><b>What's New (9.14.26) (Click to expand)</b></summary>
 
   ### Color attention check
